@@ -1,0 +1,38 @@
+{
+  "project": "项目名称",
+  "version": "0.1.0",
+  "created": "YYYY-MM-DD",
+  "features": [
+    {
+      "id": "F001",
+      "name": "功能名称",
+      "status": "pending",
+      "priority": "high",
+      "description": "功能描述",
+      "level": "M",
+      "context_ref": ".harness/context/product/PRD-YYYY-NNN-xxx.md",
+      "parent_ref": null,
+      "owner": "agent/human",
+      "created": "YYYY-MM-DD",
+      "updated": "YYYY-MM-DD",
+      "tests": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      }
+    }
+  ],
+  "status_map": {
+    "pending": "待开发",
+    "in_progress": "开发中",
+    "review": "待审查",
+    "testing": "测试中",
+    "done": "已完成",
+    "blocked": "阻塞"
+  },
+  "level_map": {
+    "S": "口头需求（< 0.5 天，无需 PRD）",
+    "M": "轻量需求（1-3 天，PRD-TEMPLATE-M）",
+    "L": "完整需求（> 3 天，PRD-TEMPLATE-L）"
+  }
+}

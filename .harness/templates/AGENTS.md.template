@@ -1,0 +1,50 @@
+# 项目级 AI 编程助手协同规则 (Project-Level AGENTS.md)
+
+## 继承声明
+本项目严格继承组织级安全宪章：[Org-Level AGENTS.md](../../AGENTS.md)（请优先阅读）。
+
+## 项目上下文 (Project Context)
+- **项目名称**: [Project Name]
+- **技术栈**: [Stack]
+- **架构描述**: [Brief Description]
+
+## 环境依赖指南
+在开始编写代码或运行命令前，请主动查阅以下文件了解物理环境：
+1. `.env.example` — 环境变量与服务端口。
+2. `docker-compose.yml`（如有）— 容器化服务拓扑。
+3. `Makefile` 或 `scripts/` — 可用的项目命令。
+4. 项目入口文件（按语言）：`package.json` / `pyproject.toml` / `go.mod` / `pom.xml`
+
+## 产品与设计协同
+
+### 需求来源（最高红线）
+开发任何新功能前，**必须**检查 `.harness/context/product/` 是否有对应的 PRD：
+- 有 PRD → 读取并严格遵循，不得自行脑补业务逻辑
+- 无 PRD → 停止，要求 PM 或 Tech Lead 提供需求文档
+
+### DoR（Definition of Ready）强制拦截
+PRD 的 YAML frontmatter 中 `prd_status` 必须满足：
+- **L 级 PRD：** product + development + testing 全部为 `done`，approved_by 不为 null
+- **M 级 PRD：** product 为 `done`，approved_by 不为 null
+- **未满足 → Agent 必须拒绝编写实现代码**，但可以帮助补充技术部分
+
+### 设计规范约束
+前端开发**必须**读取 `.harness/context/design/DESIGN-TOKENS.json`：
+- 颜色取值优先从 `semanticColor` 获取具备业务语义的色值
+- 所有字号、间距、圆角、阴影从 Token 取值
+- 禁止使用魔法数值（hardcoded hex、px）和魔法 Z-Index
+- Token 中没有的值，向人类确认是否新增
+
+## 严格执行自验证法则
+本项目适用 `.harness/verification.md` 协议。出现错误时，最多允许尝试 2 种不同方法，之后必须停止并记录到 `progress.md` 寻求人类帮助。
+
+## 禁止修改的文件
+<!-- Agent 不应触碰的文件/目录 -->
+- `config/production.*`
+- `migrations/`（除非明确要求）
+- `.env.example`（模板文件）
+
+## 当前重点
+<!-- 当前开发重点，Agent 优先关注 -->
+- [ ] [当前任务1]
+- [ ] [当前任务2]

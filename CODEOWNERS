@@ -1,0 +1,27 @@
+# 代码归属与 Reviewer 自动分配
+
+# 默认 owner（所有文件）
+* @team-lead
+
+# Harness 配置（Agent 治理层）
+.harness/ @team-lead @devops-lead
+AGENTS.md @team-lead
+CLAUDE.md @team-lead
+
+# 安全相关
+.harness/rules/security.md @security-team
+.harness/hooks/guards/ @security-team
+.harness/scripts/security-check.sh @security-team
+
+# CI/CD
+.github/ @devops-lead
+.harness/gates/ @devops-lead
+
+# 前端
+# src/frontend/ @frontend-team
+
+# 后端
+# src/backend/ @backend-team
+
+# 数据库
+# migrations/ @dba-team

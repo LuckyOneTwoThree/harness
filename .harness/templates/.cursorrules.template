@@ -1,0 +1,26 @@
+# .cursorrules 模板
+
+> Cursor IDE 特定规则文件。放在项目根目录。
+> 与 AGENTS.md 互补，此文件处理 Cursor 特有的行为。
+
+# Cursor Rules for [项目名称]
+
+## 通用规则
+遵循 AGENTS.md 中的所有规范。
+
+## Cursor 特有配置
+
+### Tab 补全
+- 只补全符合项目风格的代码
+- 不生成 console.log / print 调试语句
+- 类型注解必须完整
+
+### Chat 行为
+- 修改代码前先解释意图
+- 每次改动不超过 3 个文件（大改动分步进行）
+- 生成代码必须附带测试
+
+### 禁止操作
+- 不要删除现有测试
+- 不要修改 ESLint/Prettier 配置
+- 不要添加新的 npm/pip 依赖而不说明理由
