@@ -127,7 +127,7 @@ module.exports = {
 
 工程层的 `validate-context.sh` 不仅仅检查 JSON 是否符合格式，还会执行**结构完整性断言 (Schema Validation)**。
 
-目前脚本会强制断言以下关键路径是否存在，缺失任何一项都会导致 Commit 失败：
+目前脚本会强制断言以下关键路径是否存在，缺失任何一项会导致校验失败（建议在 CI 或 pre-commit 中调用）：
 - `color.error` (错误色，极易遗漏)
 - `typography.fontSize`
 - `zIndex`

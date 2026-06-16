@@ -27,9 +27,19 @@ FOUND=0
 
 for file in $FILES; do
     BASENAME=$(basename "$file" 2>/dev/null || echo "")
-    # 跳过 .env.example（模板文件，必须提交）
-    if [ "$BASENAME" = ".env.example" ]; then
-        continue
+    # .env 文件白名单：只允许 .env.example、.env.test、.env.development、.env.staging
+    if echo "$BASENAME" | grep -qE "^\.env"; then
+        case "$BASENAME" in
+            .env.example|.env.test|.env.development|.env.staging)
+                continue  # 白名单，放行
+                ;;
+            .env|.env.local|.env.production|.env.*.local)
+                # 真正敏感的文件，拦截
+                ;;
+            *)
+                continue  # 其他 .env.* 默认放行
+                ;;
+        esac
     fi
     if echo "$BASENAME" | grep -qiE "$SENSITIVE_PATTERNS"; then
         echo ""

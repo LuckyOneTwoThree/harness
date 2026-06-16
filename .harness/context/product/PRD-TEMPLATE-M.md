@@ -1,6 +1,6 @@
 ---
 title: "[功能名称] 轻量需求"
-prd_id: "PRD-YYYY-NNN-S"
+prd_id: "PRD-YYYY-NNN-M"
 version: "1.0"
 author: "[PM/开发]"
 created: "YYYY-MM-DD"
