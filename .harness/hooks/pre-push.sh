@@ -15,7 +15,7 @@ echo "========================"
 # ---------- 1. 提交格式检查 ----------
 HOOKS_DIR=".harness/hooks/guards"
 if [ -f "$HOOKS_DIR/guard-commit-msg.sh" ] && [ -x "$HOOKS_DIR/guard-commit-msg.sh" ]; then
-    bash "$HOOKS_DIR/guard-commit-msg.sh" || true
+    bash "$HOOKS_DIR/guard-commit-msg.sh"
 fi
 
 # ---------- 2. 受保护分支拦截 ----------

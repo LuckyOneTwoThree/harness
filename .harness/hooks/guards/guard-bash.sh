@@ -26,7 +26,15 @@ FOUND=0
 
 for file in $FILES; do
     if [ -f "$file" ]; then
+        # 跳过 migrations 目录（合法 DDL）
+        if echo "$file" | grep -qiE "migration|migrate"; then
+            continue
+        fi
         if grep -qiE "$DANGEROUS_CMDS" "$file" 2>/dev/null; then
+            # 检查是否有 harness:allow 豁免
+            if grep -q "# harness:allow" "$file" 2>/dev/null; then
+                continue
+            fi
             echo ""
             echo -e "  ${RED}❌ $file${NC}"
             grep -niE "$DANGEROUS_CMDS" "$file" 2>/dev/null | head -3

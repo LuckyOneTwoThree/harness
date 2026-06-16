@@ -1,7 +1,7 @@
 # 项目级 AI 编程助手协同规则 (Project-Level AGENTS.md)
 
 ## 继承声明
-本项目严格继承组织级安全宪章：[Org-Level AGENTS.md](../../AGENTS.md)（请优先阅读）。
+本项目严格继承组织级安全宪章：[Org-Level AGENTS.md](AGENTS.md)（请优先阅读）。
 
 ## 项目上下文 (Project Context)
 - **项目名称**: [Project Name]

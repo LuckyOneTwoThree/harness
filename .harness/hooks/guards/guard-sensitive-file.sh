@@ -27,6 +27,10 @@ FOUND=0
 
 for file in $FILES; do
     BASENAME=$(basename "$file" 2>/dev/null || echo "")
+    # 跳过 .env.example（模板文件，必须提交）
+    if [ "$BASENAME" = ".env.example" ]; then
+        continue
+    fi
     if echo "$BASENAME" | grep -qiE "$SENSITIVE_PATTERNS"; then
         echo ""
         echo -e "  ${RED}❌ $file (敏感文件不应提交)${NC}"

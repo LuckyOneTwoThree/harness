@@ -44,16 +44,34 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 ARCHIVE_FILE="$ARCHIVE_DIR/progress_${TIMESTAMP}.md"
 ARCHIVE_LINES=$((CURRENT_LINES - KEEP_LINES))
 
-# 提取旧内容归档
-head -n "$ARCHIVE_LINES" "$PROGRESS_FILE" > "$ARCHIVE_FILE"
+# 提取旧内容归档（保护"## 最新状态"头部块，约 10 行）
+HEADER_LINES=10
+BODY_START=$((HEADER_LINES + 1))
+ARCHIVE_BODY_LINES=$((ARCHIVE_LINES - HEADER_LINES))
 
-# 保留最近内容 + 归档标记
-{
-    echo "> ⚠️ 此文件已自动归档。更早的记录请查阅 \`.harness/archives/\`"
-    echo "> 归档时间: $(date '+%Y-%m-%d %H:%M:%S') | 归档: $ARCHIVE_LINES 行 | 保留: $KEEP_LINES 行"
-    echo ""
-    tail -n "$KEEP_LINES" "$PROGRESS_FILE"
-} > "${PROGRESS_FILE}.tmp"
+if [ $ARCHIVE_BODY_LINES -gt 0 ]; then
+    # 归档：跳过头部，归档旧的正文部分
+    {
+        head -n $HEADER_LINES "$PROGRESS_FILE"
+        echo ""
+        echo "> 以下内容已归档至 $ARCHIVE_FILE"
+        echo ""
+        tail -n +$BODY_START "$PROGRESS_FILE" | head -n $ARCHIVE_BODY_LINES
+    } > "$ARCHIVE_FILE"
+
+    # 保留：头部 + 最近的正文
+    {
+        head -n $HEADER_LINES "$PROGRESS_FILE"
+        echo ""
+        echo "> ⚠️ 此文件已自动归档。更早的记录请查阅 \`.harness/archives/\`"
+        echo "> 归档时间: $(date '+%Y-%m-%d %H:%M:%S') | 归档: $ARCHIVE_BODY_LINES 行 | 保留: $KEEP_LINES 行"
+        echo ""
+        tail -n "$KEEP_LINES" "$PROGRESS_FILE"
+    } > "${PROGRESS_FILE}.tmp"
+else
+    # 归档行数不足一个头部，整体保留
+    cp "$PROGRESS_FILE" "${PROGRESS_FILE}.tmp"
+fi
 
 mv "${PROGRESS_FILE}.tmp" "$PROGRESS_FILE"
 
