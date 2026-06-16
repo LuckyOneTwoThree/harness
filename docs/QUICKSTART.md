@@ -3,15 +3,18 @@
 ## 第一步：克隆模板
 
 ```bash
-# 方式 1：直接克隆
-git clone <harness-template-repo> my-project
+# 方式 1：直接克隆到新项目
+git clone https://github.com/LuckyOneTwoThree/harness.git my-project
 cd my-project
 
 # 方式 2：复制到已有项目
-cp -r harness-template/.harness /你的项目/
-cp harness-template/AGENTS.md /你的项目/
-cp harness-template/CODEOWNERS /你的项目/
-cp harness-template/.gitignore /你的项目/
+git clone https://github.com/LuckyOneTwoThree/harness.git /tmp/harness
+cp -r /tmp/harness/.harness /你的项目/
+cp /tmp/harness/AGENTS.md /你的项目/
+cp /tmp/harness/CODEOWNERS /你的项目/
+cp /tmp/harness/.gitignore /你的项目/
+cp -r /tmp/harness/docs /你的项目/
+rm -rf /tmp/harness
 ```
 
 ## 第二步：初始化
@@ -23,7 +26,7 @@ bash .harness/scripts/init-project.sh
 
 脚本会自动：
 - 创建 `archives/` 目录
-- 从模板生成项目级 `AGENTS.md`、`CLAUDE.md`、`.env.example`
+- 从模板生成项目级 `AGENTS.md`、`CLAUDE.md`、`.cursorrules`、`.env.example`
 - 初始化 `features.json` 和 `progress.md`
 - 安装 Git hooks
 - 设置 guards 可执行权限
@@ -34,7 +37,7 @@ bash .harness/scripts/init-project.sh
 bash .harness/scripts/verify-harness.sh
 ```
 
-看到 `✅ 全部通过` 即可开始使用。
+看到 `✅ Harness 健康状态良好` 即可开始使用。
 
 ## 第四步：开始使用
 
@@ -68,4 +71,9 @@ bash .harness/scripts/verify-harness.sh
 ├── verification.md
 ├── features.json
 └── progress.md
+docs/
+├── QUICKSTART.md       ← 本文件
+├── ARCHITECTURE.md     ← 架构说明
+├── CONTRIBUTING.md     ← 贡献指南
+└── TROUBLESHOOTING.md  ← 常见问题
 ```

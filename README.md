@@ -16,7 +16,7 @@ Harness 是模型之外的整套运行环境。这个模板提供了一套开箱
 
 ```bash
 # 在你的项目根目录执行
-bash /path/to/harness-template/.harness/scripts/init-project.sh
+bash .harness/scripts/init-project.sh
 ```
 
 该脚本会自动生成项目级配置、挂载 Git Hooks、初始化状态文件。
