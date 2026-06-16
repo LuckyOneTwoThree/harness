@@ -14,6 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # --- Python ---
+      - name: Set up Python
+        if: hashFiles('pyproject.toml', 'setup.py', 'requirements.txt') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
       - name: Python - Lint & Format
         if: hashFiles('pyproject.toml', 'setup.py', 'requirements.txt') != ''
         run: |
@@ -22,12 +30,32 @@ jobs:
           black --check .                 # 格式错误必须阻断
           mypy . --ignore-missing-imports # 类型检查阻断（新项目可改为 || true）
 
+      # --- Node.js ---
+      - name: Set up Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        if: hashFiles('package.json') != ''
+        run: npm install -g pnpm
+
       - name: Node.js - Lint & Type Check
         if: hashFiles('package.json') != ''
         run: |
           pnpm install --frozen-lockfile
           pnpm lint                       # lint 错误必须阻断
           pnpm typecheck                  # 类型检查阻断（新项目可改为 || true）
+
+      # --- Go ---
+      - name: Set up Go
+        if: hashFiles('go.mod') != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
 
       - name: Go - Lint
         if: hashFiles('go.mod') != ''
@@ -51,7 +79,9 @@ jobs:
 
       - name: Node.js - 依赖安全
         if: hashFiles('package-lock.json', 'pnpm-lock.yaml') != ''
-        run: pnpm audit || true  # 同上
+        run: |
+          npm install -g pnpm
+          pnpm audit || true  # 同上
 
   # ---------- 测试门控 ----------
   test:
@@ -61,17 +91,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        if: hashFiles('pyproject.toml', 'setup.py', 'requirements.txt') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
       - name: Python - 测试
         if: hashFiles('pyproject.toml', 'setup.py', 'requirements.txt') != ''
         run: |
           pip install pytest pytest-cov
           pytest --cov=. --cov-report=term-missing --cov-fail-under=70  # 测试失败必须阻断
 
+      - name: Set up Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        if: hashFiles('package.json') != ''
+        run: npm install -g pnpm
+
       - name: Node.js - 测试
         if: hashFiles('package.json') != ''
         run: |
           pnpm install --frozen-lockfile
           pnpm test -- --coverage --coverageThreshold='{"global":{"lines":70}}'  # 测试失败必须阻断
+
+      - name: Set up Go
+        if: hashFiles('go.mod') != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
 
       - name: Go - 测试
         if: hashFiles('go.mod') != ''
@@ -81,7 +136,6 @@ jobs:
 
       - name: Check Verification Protocol
         run: |
-          # 检查 features.json 中 "done" 的条目是否有对应测试
           if [ -f ".harness/features.json" ]; then
             python3 -c "
           import json, sys
@@ -92,7 +146,7 @@ jobs:
           if no_test:
               print(f'⚠️  以下功能标记 done 但无单元测试: {[f[\"name\"] for f in no_test]}')
               sys.exit(1)
-          " || true  # features.json 格式异常不阻断（兼容无 PRD 的项目）
+          " || true
           fi
 
   # ---------- 飞书通知 ----------

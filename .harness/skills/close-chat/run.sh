@@ -88,8 +88,24 @@ fi
 # ---------- 4. 功能状态检查 ----------
 echo -e "\n${BLUE}[4/4] 功能状态${NC}"
 if [ -f "$FEATURES_FILE" ]; then
-    IN_PROGRESS=$(grep -c '"status": "in_progress"' "$FEATURES_FILE" 2>/dev/null || echo 0)
-    BLOCKED=$(grep -c '"status": "blocked"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+    # 用 python3 精确解析
+    if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+        PYTHON_CMD="python3"
+        command -v python3 >/dev/null 2>&1 || PYTHON_CMD="python"
+        eval $($PYTHON_CMD -c "
+import json
+with open('$FEATURES_FILE') as f:
+    data = json.load(f)
+features = data.get('features', [])
+ip = sum(1 for f in features if f.get('status') == 'in_progress')
+bl = sum(1 for f in features if f.get('status') == 'blocked')
+print(f'IN_PROGRESS={ip}')
+print(f'BLOCKED={bl}')
+" 2>/dev/null)
+    else
+        IN_PROGRESS=$(grep -c '"status": "in_progress"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+        BLOCKED=$(grep -c '"status": "blocked"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+    fi
     if [ "$IN_PROGRESS" -gt 0 ]; then
         echo -e "  ${YELLOW}⚠️  有 $IN_PROGRESS 个功能仍在进行中，确保已记录到 progress.md${NC}"
     fi

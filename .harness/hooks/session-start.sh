@@ -48,11 +48,29 @@ fi
 echo -e "\n${BLUE}[3/4] 功能清单${NC}"
 FEATURES_FILE=".harness/features.json"
 if [ -f "$FEATURES_FILE" ]; then
-    TOTAL=$(grep -c '"id"' "$FEATURES_FILE" 2>/dev/null || echo 0)
-    DONE=$(grep -c '"status": "done"' "$FEATURES_FILE" 2>/dev/null || echo 0)
-    BLOCKED=$(grep -c '"status": "blocked"' "$FEATURES_FILE" 2>/dev/null || echo 0)
-    IN_PROGRESS=$(grep -c '"status": "in_progress"' "$FEATURES_FILE" 2>/dev/null || echo 0)
-    echo "  总计: $TOTAL | 完成: $DONE | 进行中: $IN_PROGRESS | 阻塞: $BLOCKED"
+    # 用 python3 精确解析 JSON（避免 grep 误计）
+    if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+        PYTHON_CMD="python3"
+        command -v python3 >/dev/null 2>&1 || PYTHON_CMD="python"
+        $PYTHON_CMD -c "
+import json
+with open('$FEATURES_FILE') as f:
+    data = json.load(f)
+features = data.get('features', [])
+total = len(features)
+done = sum(1 for f in features if f.get('status') == 'done')
+blocked = sum(1 for f in features if f.get('status') == 'blocked')
+in_progress = sum(1 for f in features if f.get('status') == 'in_progress')
+print(f'  总计: {total} | 完成: {done} | 进行中: {in_progress} | 阻塞: {blocked}')
+" 2>/dev/null || echo "  ⚠️  JSON 解析失败"
+    else
+        # fallback: grep（精度较低但不依赖 python）
+        TOTAL=$(grep -c '"id"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+        DONE=$(grep -c '"status": "done"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+        BLOCKED=$(grep -c '"status": "blocked"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+        IN_PROGRESS=$(grep -c '"status": "in_progress"' "$FEATURES_FILE" 2>/dev/null || echo 0)
+        echo "  总计: $TOTAL | 完成: $DONE | 进行中: $IN_PROGRESS | 阻塞: $BLOCKED"
+    fi
 else
     echo -e "  ${YELLOW}⚠️  features.json 不存在${NC}"
 fi
