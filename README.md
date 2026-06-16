@@ -140,13 +140,35 @@ PRD 必须通过 DoR 检查，Agent 才允许开始编码：
 
 ## 支持的 AI 工具
 
-| 工具 | 配置文件 |
-|------|----------|
-| Claude Code | `CLAUDE.md` |
-| Cursor | `.cursorrules` |
-| OpenAI Codex | `AGENTS.md` |
-| GitHub Copilot | `AGENTS.md` |
-| OpenCode | `AGENTS.md` |
+本框架基于 [AGENTS.md](https://www.agents.md/) 跨工具标准（60,000+ 仓库在用，Linux Foundation 托管），兼容 30+ 个 AI 编码工具。
+
+### 核心兼容矩阵
+
+| 工具 | AGENTS.md | Skills | Hooks/Guards | 适配度 | 说明 |
+|------|-----------|--------|-------------|--------|------|
+| **Hermes Agent** | ✅ 原生 | ✅ 原生 | ✅ 完整 | ⭐⭐⭐ | 天然兼容，全部机制生效 |
+| **Claude Code** | ✅ 原生 | ✅ SKILL.md | ✅ 完整 | ⭐⭐⭐ | 全部机制生效 |
+| **OpenAI Codex** | ✅ 原生 | ✅ SKILL.md | ✅ 完整 | ⭐⭐⭐ | 全部机制生效 |
+| **Cursor** | ✅ 原生 | ✅ | ✅ 完整 | ⭐⭐⭐ | 全部机制生效 |
+| **Trae SOLO** | ✅ 原生 | ⚠️ 自定义 Agent | ⚠️ 沙箱+命令白名单 | ⭐⭐ | AGENTS.md 生效，hooks 为软约束 |
+| **Google Jules** | ✅ 原生 | ❌ | ❌（云端运行） | ⭐⭐ | AGENTS.md 自动读取，安全靠 CI 门控兜底 |
+| **WorkBuddy** | ✅ OpenClaw 兼容 | ✅ OpenClaw 兼容 | ❌ | ⭐⭐ | 通过 OpenClaw 兼容层支持 SKILL.md |
+| **OpenClaw** | ✅ 原生 | ✅ 原生 | ❌ | ⭐⭐ | 完全兼容 AGENTS.md + SKILL.md |
+| **GitHub Copilot** | ✅ 原生 | ❌ | ❌ | ⭐ | AGENTS.md 生效，无 skill 系统 |
+| **Gemini CLI** | ✅ 配置 | ❌ | ❌ | ⭐ | 需 `.gemini/settings.json` 配置 |
+| **Windsurf** | ✅ 原生 | ❌ | ❌ | ⭐ | AGENTS.md 生效 |
+| **Zed** | ✅ 原生 | ❌ | ❌ | ⭐ | AGENTS.md 生效 |
+| **Aider** | ✅ 配置 | ❌ | ❌ | ⭐ | 需 `.aider.conf.yml` 配置 |
+
+### 三层适配说明
+
+| 层 | 机制 | 跨工具兼容性 |
+|----|------|-------------|
+| **AGENTS.md** | 组织级规范、权限矩阵、DoR 拦截 | ✅ 30+ 工具原生读取 |
+| **SKILL.md** | 可复用工作流（15 个 Skill） | ✅ Hermes/Claude Code/Codex/Cursor/OpenClaw/WorkBuddy |
+| **Hooks/Guards** | Git hooks + 安全守卫 | ✅ 所有本地运行的工具（CI 门控兜底云端工具） |
+
+**核心结论：** 即使团队混合使用多种 AI 工具，AGENTS.md 层面的规范对所有工具都生效。差异仅在 Hooks（云端工具不执行本地 hooks）和 Skills（部分工具不支持 SKILL.md）。CI 门控是最终兜底——无论 Agent 用什么工具，PR 必须通过 CI 才能合并。
 
 ## 参考资源
 
